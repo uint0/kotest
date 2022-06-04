@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
    kotlin("multiplatform")
+   id("io.kotest")
    id("com.adarshr.test-logger")
 }
 
