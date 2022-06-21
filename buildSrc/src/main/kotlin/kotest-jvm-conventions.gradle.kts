@@ -2,6 +2,7 @@
 
 plugins {
    id("kotlin-conventions")
+   id("kotest-publishing-conventions")
 }
 
 kotlin {
