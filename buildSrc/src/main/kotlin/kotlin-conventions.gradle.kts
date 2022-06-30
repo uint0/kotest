@@ -31,7 +31,7 @@ tasks.withType<Test>() {
 tasks.withType<KotlinCompile>().configureEach {
    kotlinOptions {
       freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-      jvmTarget = "1.8"
+      jvmTarget = "11"
       apiVersion = "1.6"
       languageVersion = "1.6"
    }

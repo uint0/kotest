@@ -94,3 +94,10 @@ slug: framework-config-props.html
 }
 
 tasks["jvmTest"].mustRunAfter(tasks["buildConfigDocs"].path)
+
+// configurations.named("jvmApiElements") {
+//   attributes {
+//      attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling::class, Bundling.EXTERNAL))
+//      attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 11)
+//   }
+// }

@@ -5,12 +5,14 @@ plugins {
 }
 
 kotlin {
-   targets {
-      jvm {
-         compilations.all {
-            kotlinOptions {
-               jvmTarget = "1.8"
-            }
+   jvmToolchain {
+      (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(11))
+   }
+
+   jvm {
+      compilations.all {
+         kotlinOptions {
+            jvmTarget = "11"
          }
       }
    }
@@ -23,3 +25,10 @@ kotlin {
       }
    }
 }
+
+//configurations.named("jvmApiElements") {
+//   attributes {
+//      attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling::class, Bundling.EXTERNAL))
+//      attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 11)
+//   }
+//}
