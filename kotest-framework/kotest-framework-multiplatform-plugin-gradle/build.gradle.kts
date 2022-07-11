@@ -1,6 +1,7 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
    `java-gradle-plugin`
+   id("kotlin")
    alias(libs.plugins.gradle.plugin.publish)
 }
 
