@@ -11,6 +11,8 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Period
 import kotlin.reflect.KClass
+import kotlin.reflect.KParameter
+import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.typeOf
@@ -19,7 +21,11 @@ import kotlin.reflect.typeOf
 @Deprecated("This logic has moved to ArbResolver and this function will be removed in 5.6. Since 5.5")
 actual inline fun <reified A> targetDefaultForClass(): Arb<A>? = targetDefaultForType(type = typeOf<A>()) as Arb<A>?
 
-fun targetDefaultForType(providedArbs: Map<KClass<*>, Arb<*>> = emptyMap(), type: KType): Arb<*>? {
+fun targetDefaultForType(
+   providedArbs: Map<KClass<*>, Arb<*>> = emptyMap(),
+   arbsForProps: Map<KProperty1<*, *>, Arb<*>> = emptyMap(),
+   type: KType
+): Arb<*>? {
    when (type) {
       typeOf<Instant>() -> Arb.instant()
       typeOf<LocalDate>() -> Arb.localDate()
@@ -35,31 +41,31 @@ fun targetDefaultForType(providedArbs: Map<KClass<*>, Arb<*>> = emptyMap(), type
    return when {
       clazz.isSubclassOf(List::class) -> {
          val upperBound = type.arguments.first().type ?: error("No bound for List")
-         Arb.list(Arb.forType(providedArbs, upperBound) as Arb<*>)
+         Arb.list(Arb.forType(providedArbs, arbsForProps, upperBound) as Arb<*>)
       }
       clazz.isSubclassOf(Set::class) -> {
          val upperBound = type.arguments.first().type ?: error("No bound for Set")
-         Arb.set(Arb.forType(providedArbs, upperBound) as Arb<*>)
+         Arb.set(Arb.forType(providedArbs, arbsForProps, upperBound) as Arb<*>)
       }
       clazz.isSubclassOf(Pair::class) -> {
          val first = type.arguments[0].type ?: error("No bound for first type parameter of Pair")
          val second = type.arguments[1].type ?: error("No bound for second type parameter of Pair")
-         Arb.pair(Arb.forType(providedArbs, first)!!, Arb.forType(providedArbs, second)!!)
+         Arb.pair(Arb.forType(providedArbs, arbsForProps, first)!!, Arb.forType(providedArbs, arbsForProps, second)!!)
       }
       clazz.isSubclassOf(Map::class) -> {
          // map key type can have or have not variance
          val first = type.arguments[0].type ?: error("No bound for first type parameter of Map<K, V>")
          val second = type.arguments[1].type ?: error("No bound for second type parameter of Map<K, V>")
-         Arb.map(Arb.forType(providedArbs, first)!!, Arb.forType(providedArbs, second)!!)
+         Arb.map(Arb.forType(providedArbs, arbsForProps, first)!!, Arb.forType(providedArbs, arbsForProps, second)!!)
       }
       clazz.isSubclassOf(Enum::class) -> {
          Arb.of(Class.forName(clazz.java.name).enumConstants.map { it as Enum<*> })
       }
       clazz.isSealed -> {
-         Arb.choice(clazz.sealedSubclasses.map { Arb.forClassUsingConstructor(providedArbs, it) })
+         Arb.choice(clazz.sealedSubclasses.map { Arb.forClassUsingConstructor(providedArbs, arbsForProps, it) })
       }
       else -> {
-        Arb.forClassUsingConstructor(providedArbs, clazz)
+        Arb.forClassUsingConstructor(providedArbs, arbsForProps, clazz)
       }
    }
 }
